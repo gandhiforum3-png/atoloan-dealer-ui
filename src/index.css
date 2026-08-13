@@ -1,0 +1,65 @@
+:root {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+
+  --color-navy-950: #0b1120;
+  --color-navy-900: #0f1424;
+  --color-navy-800: #171e35;
+
+  --color-primary: #4f46e5;
+  --color-primary-dark: #4338ca;
+  --color-primary-light: #eef2ff;
+
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-faint: #94a3b8;
+  --color-text-on-dark: #f8fafc;
+  --color-text-on-dark-muted: #94a3b8;
+
+  --color-success-bg: #dcfce7;
+  --color-success-text: #16a34a;
+  --color-warning-bg: #fef3c7;
+  --color-warning-text: #b45309;
+  --color-danger-bg: #fee2e2;
+  --color-danger-text: #dc2626;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-panel: 0 20px 60px rgba(15, 23, 42, 0.18);
+
+  font-family: 'Lato', 'Montserrat', system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
