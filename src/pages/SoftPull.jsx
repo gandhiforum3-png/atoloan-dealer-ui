@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { US_STATES } from '../data/usStates'
+import { VEHICLE_TYPES } from '../data/vehicleTypes'
+import { submitSoftPull } from '../api/softPull'
+import { ApiError } from '../api/client'
 import './SoftPull.css'
 
 const EMPTY_FORM = {
@@ -11,16 +14,48 @@ const EMPTY_FORM = {
   city: '',
   state: '',
   zip: '',
+  vehicleType: '',
+  vehiclePrice: '',
+  downPayment: '',
 }
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 const isValidPhone = (phone) => phone.replace(/\D/g, '').length >= 10
+
+function friendlyError(err) {
+  return err instanceof ApiError ? err.message : 'Unable to reach the server. Is the backend running?'
+}
+
+function buildPayload(form) {
+  const answers = { 'vehicle-type': form.vehicleType }
+  if (form.vehiclePrice.trim()) {
+    answers['vehicle-price'] = form.vehiclePrice.trim()
+  }
+  if (form.downPayment.trim()) {
+    answers['down-payment'] = form.downPayment.trim()
+  }
+
+  return {
+    contactInfo: {
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim(),
+      address: form.street.trim(),
+      city: form.city.trim(),
+      state: form.state,
+      zip: form.zip.trim(),
+    },
+    answers,
+  }
+}
 
 function SoftPull() {
   const [form, setForm] = useState(EMPTY_FORM)
   const [consent, setConsent] = useState(false)
   const [status, setStatus] = useState('idle') // idle | loading | done
   const [result, setResult] = useState(null)
+  const [error, setError] = useState(null)
 
   const updateField = (field) => (event) => {
     setForm((prev) => ({ ...prev, [field]: event.target.value }))
@@ -35,25 +70,29 @@ function SoftPull() {
     form.street &&
     form.city &&
     form.state &&
-    form.zip
+    form.zip &&
+    form.vehicleType
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     if (!canSubmit) return
 
     setStatus('loading')
+    setError(null)
     setResult(null)
 
-    // Mock inquiry — replace with a real soft-pull API call.
-    setTimeout(() => {
-      setResult({
-        scoreRange: '680 - 720',
-        matchedLenders: 4,
-        recommendedApr: '6.9% - 9.4%',
-      })
+    try {
+      const data = await submitSoftPull(buildPayload(form))
+      setResult(data)
       setStatus('done')
-    }, 900)
+    } catch (err) {
+      setError(friendlyError(err))
+      setStatus('idle')
+    }
   }
+
+  const prequal = result?.prequal
+  const bestBank = result?.best_bank
 
   return (
     <div>
@@ -178,10 +217,69 @@ function SoftPull() {
           </div>
         </div>
 
+        <div className="soft-pull-grid soft-pull-grid--3">
+          <div>
+            <label className="field-label" htmlFor="vehicleType">
+              Vehicle Type
+            </label>
+            <select
+              id="vehicleType"
+              className="field-input"
+              value={form.vehicleType}
+              onChange={updateField('vehicleType')}
+            >
+              <option value="" disabled>
+                Select vehicle type
+              </option>
+              {VEHICLE_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="field-label" htmlFor="vehiclePrice">
+              Vehicle Price <span className="field-label-optional">(optional)</span>
+            </label>
+            <input
+              id="vehiclePrice"
+              type="number"
+              min="0"
+              step="1"
+              className="field-input"
+              placeholder="32000"
+              value={form.vehiclePrice}
+              onChange={updateField('vehiclePrice')}
+            />
+          </div>
+          <div>
+            <label className="field-label" htmlFor="downPayment">
+              Down Payment <span className="field-label-optional">(optional)</span>
+            </label>
+            <input
+              id="downPayment"
+              type="number"
+              min="0"
+              step="1"
+              className="field-input"
+              placeholder="5000"
+              value={form.downPayment}
+              onChange={updateField('downPayment')}
+            />
+          </div>
+        </div>
+
         <label className="checkbox-label soft-pull-consent">
           <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />
           I certify that the applicant has provided written or electronic consent to run a soft pull query.
         </label>
+
+        {error && (
+          <p className="login-error" role="alert">
+            {error}
+          </p>
+        )}
 
         <div className="soft-pull-submit-row">
           <button type="submit" className="btn btn-dark" disabled={!canSubmit || status === 'loading'}>
@@ -192,20 +290,46 @@ function SoftPull() {
       </form>
 
       <div className="card soft-pull-results">
-        {status === 'done' && result ? (
-          <div className="soft-pull-result-grid">
-            <div>
-              <p className="soft-pull-result-label">Estimated Score Range</p>
-              <p className="soft-pull-result-value">{result.scoreRange}</p>
+        {status === 'done' && prequal ? (
+          <div>
+            <div className="soft-pull-result-grid">
+              <div>
+                <p className="soft-pull-result-label">Credit Score</p>
+                <p className="soft-pull-result-value">{prequal.score ?? '—'}</p>
+              </div>
+              <div>
+                <p className="soft-pull-result-label">Tier</p>
+                <p className="soft-pull-result-value">{prequal.tier ?? '—'}</p>
+              </div>
+              <div>
+                <p className="soft-pull-result-label">Score Range</p>
+                <p className="soft-pull-result-value">{prequal.score_range ?? '—'}</p>
+              </div>
             </div>
-            <div>
-              <p className="soft-pull-result-label">Matched Lenders</p>
-              <p className="soft-pull-result-value">{result.matchedLenders}</p>
-            </div>
-            <div>
-              <p className="soft-pull-result-label">Recommended APR</p>
-              <p className="soft-pull-result-value">{result.recommendedApr}</p>
-            </div>
+
+            {prequal.score == null && (
+              <p className="soft-pull-result-note">
+                {prequal.result_description || 'No credit file was found for this applicant.'}
+              </p>
+            )}
+
+            {bestBank ? (
+              <div className="soft-pull-bank-match">
+                <p className="soft-pull-result-label">Matched Lender</p>
+                <p className="soft-pull-bank-name">{bestBank.bank_name}</p>
+                <p className="soft-pull-result-note">
+                  {bestBank.program_name} · {bestBank.interest_rate}
+                  {bestBank.term_in_months ? ` · ${bestBank.term_in_months} mo` : ''}
+                </p>
+              </div>
+            ) : (
+              prequal.score != null && (
+                <p className="soft-pull-result-note">
+                  No lender match yet — vehicle price is needed to calculate a loan amount for bank
+                  matching.
+                </p>
+              )
+            )}
           </div>
         ) : (
           <div className="empty-state">

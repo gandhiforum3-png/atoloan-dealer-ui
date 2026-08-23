@@ -1,64 +1,85 @@
 import { useEffect, useState } from 'react'
-import QRCodeLib from 'qrcode'
-import { currentUser } from '../data/currentUser'
+import { getMyQrCode, generateQrCode, updateQrCodeLabel } from '../api/qrCodes'
+import { ApiError } from '../api/client'
 import './QRCode.css'
 
-const DEALER_SLUG = currentUser.org
-  .toLowerCase()
-  .replace(/[^a-z0-9]+/g, '-')
-  .replace(/(^-|-$)/g, '')
-
-function createToken() {
-  return Math.random().toString(36).slice(2, 10)
-}
-
-// Placeholder intake URL — point this at the real soft-pull landing page once it exists.
-function buildUrl(token) {
-  return `https://apply.atoloans.com/${DEALER_SLUG}?code=${token}`
+function friendlyError(err) {
+  return err instanceof ApiError ? err.message : 'Unable to reach the server. Is the backend running?'
 }
 
 function QRCode() {
-  const [record, setRecord] = useState(null) // { label, token, url, updatedAt }
+  const [record, setRecord] = useState(null)
   const [labelDraft, setLabelDraft] = useState('Showroom QR')
-  const [imageUrl, setImageUrl] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [actionState, setActionState] = useState('idle') // idle | generating | updating | regenerating
+  const [error, setError] = useState(null)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    if (!record) return
-
     let cancelled = false
-    QRCodeLib.toDataURL(record.url, {
-      width: 320,
-      margin: 1,
-      color: { dark: '#0b1120', light: '#ffffff' },
-    }).then((dataUrl) => {
-      if (!cancelled) setImageUrl(dataUrl)
-    })
+
+    getMyQrCode()
+      .then((data) => {
+        if (cancelled) return
+        if (data) {
+          setRecord(data)
+          setLabelDraft(data.label)
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) setError(friendlyError(err))
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
 
     return () => {
       cancelled = true
     }
-  }, [record])
+  }, [])
 
-  const handleGenerate = () => {
-    const token = createToken()
-    setRecord({
-      label: labelDraft.trim() || 'Showroom QR',
-      token,
-      url: buildUrl(token),
-      updatedAt: new Date(),
-    })
+  const handleGenerate = async () => {
+    setActionState('generating')
+    setError(null)
+    try {
+      const data = await generateQrCode(labelDraft.trim() || 'Showroom QR')
+      setRecord(data)
+      setLabelDraft(data.label)
+    } catch (err) {
+      setError(friendlyError(err))
+    } finally {
+      setActionState('idle')
+    }
   }
 
-  const handleUpdateLabel = () => {
+  const handleUpdateLabel = async () => {
     if (!record) return
-    setRecord((prev) => ({ ...prev, label: labelDraft.trim() || prev.label, updatedAt: new Date() }))
+    setActionState('updating')
+    setError(null)
+    try {
+      const data = await updateQrCodeLabel(labelDraft.trim() || record.label)
+      setRecord(data)
+      setLabelDraft(data.label)
+    } catch (err) {
+      setError(friendlyError(err))
+    } finally {
+      setActionState('idle')
+    }
   }
 
-  const handleGenerateNew = () => {
+  const handleGenerateNew = async () => {
     if (!record) return
-    const token = createToken()
-    setRecord((prev) => ({ ...prev, token, url: buildUrl(token), updatedAt: new Date() }))
+    setActionState('regenerating')
+    setError(null)
+    try {
+      const data = await generateQrCode(record.label)
+      setRecord(data)
+      setLabelDraft(data.label)
+    } catch (err) {
+      setError(friendlyError(err))
+    } finally {
+      setActionState('idle')
+    }
   }
 
   const handleCopy = async () => {
@@ -67,6 +88,8 @@ function QRCode() {
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
   }
+
+  const busy = actionState !== 'idle'
 
   return (
     <div>
@@ -81,66 +104,89 @@ function QRCode() {
         <div className="card qr-code-form">
           <h2>{record ? 'Manage Code' : 'Generate a Code'}</h2>
 
-          <label className="field-label" htmlFor="qr-label">
-            Label
-          </label>
-          <input
-            id="qr-label"
-            className="field-input"
-            placeholder="e.g. Showroom Entrance"
-            value={labelDraft}
-            onChange={(event) => setLabelDraft(event.target.value)}
-          />
+          {loading ? (
+            <p className="qr-code-note">Loading…</p>
+          ) : (
+            <>
+              <label className="field-label" htmlFor="qr-label">
+                Label
+              </label>
+              <input
+                id="qr-label"
+                className="field-input"
+                placeholder="e.g. Showroom Entrance"
+                value={labelDraft}
+                onChange={(event) => setLabelDraft(event.target.value)}
+              />
 
-          <div className="qr-code-actions">
-            {!record ? (
-              <button type="button" className="btn btn-primary btn-block" onClick={handleGenerate}>
-                <i className="fa-solid fa-qrcode" aria-hidden="true"></i>
-                Generate QR Code
-              </button>
-            ) : (
-              <>
-                <button type="button" className="btn btn-primary btn-block" onClick={handleUpdateLabel}>
-                  <i className="fa-solid fa-pen" aria-hidden="true"></i>
-                  Update QR Code
-                </button>
-                <button type="button" className="btn btn-secondary btn-block" onClick={handleGenerateNew}>
-                  <i className="fa-solid fa-rotate" aria-hidden="true"></i>
-                  Generate New Code
-                </button>
-                <p className="qr-code-warning">
-                  Generating a new code replaces the link below — any printed or shared copies of the
-                  previous code will stop working.
+              {error && (
+                <p className="login-error" role="alert">
+                  {error}
                 </p>
-              </>
-            )}
-          </div>
+              )}
 
-          {record && (
-            <div className="qr-code-meta">
-              <p className="field-label">Destination Link</p>
-              <div className="qr-code-link-row">
-                <code>{record.url}</code>
-                <button type="button" className="btn btn-secondary qr-code-copy" onClick={handleCopy}>
-                  {copied ? 'Copied' : 'Copy'}
-                </button>
+              <div className="qr-code-actions">
+                {!record ? (
+                  <button type="button" className="btn btn-primary btn-block" onClick={handleGenerate} disabled={busy}>
+                    <i className="fa-solid fa-qrcode" aria-hidden="true"></i>
+                    {actionState === 'generating' ? 'Generating…' : 'Generate QR Code'}
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-block"
+                      onClick={handleUpdateLabel}
+                      disabled={busy}
+                    >
+                      <i className="fa-solid fa-pen" aria-hidden="true"></i>
+                      {actionState === 'updating' ? 'Updating…' : 'Update QR Code'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-block"
+                      onClick={handleGenerateNew}
+                      disabled={busy}
+                    >
+                      <i className="fa-solid fa-rotate" aria-hidden="true"></i>
+                      {actionState === 'regenerating' ? 'Generating…' : 'Generate New Code'}
+                    </button>
+                    <p className="qr-code-warning">
+                      Generating a new code replaces the link below — any printed or shared copies of the
+                      previous code will stop working.
+                    </p>
+                  </>
+                )}
               </div>
-              <p className="qr-code-updated">Last updated {record.updatedAt.toLocaleString()}</p>
-            </div>
-          )}
 
-          <p className="qr-code-note">
-            This code isn&apos;t saved to your dealer account yet — it only lives in this browser tab
-            and resets on reload.
-          </p>
+              {record && (
+                <div className="qr-code-meta">
+                  <p className="field-label">Destination Link</p>
+                  <div className="qr-code-link-row">
+                    <code>{record.url}</code>
+                    <button type="button" className="btn btn-secondary qr-code-copy" onClick={handleCopy}>
+                      {copied ? 'Copied' : 'Copy'}
+                    </button>
+                  </div>
+                  <p className="qr-code-updated">
+                    Last updated {new Date(record.updated_at).toLocaleString()}
+                  </p>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         <div className="card qr-code-preview">
-          {imageUrl ? (
+          {record ? (
             <>
-              <img src={imageUrl} alt={`QR code for ${record.label}`} className="qr-code-image" />
+              <img src={record.image_data_url} alt={`QR code for ${record.label}`} className="qr-code-image" />
               <p className="qr-code-image-label">{record.label}</p>
-              <a href={imageUrl} download={`${DEALER_SLUG}-qr-code.png`} className="btn btn-dark btn-block">
+              <a
+                href={record.image_data_url}
+                download={`${record.dealer_id}-qr-code.png`}
+                className="btn btn-dark btn-block"
+              >
                 <i className="fa-solid fa-download" aria-hidden="true"></i>
                 Download PNG
               </a>

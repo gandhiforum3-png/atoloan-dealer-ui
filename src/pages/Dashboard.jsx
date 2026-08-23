@@ -2,8 +2,12 @@ import { Link } from 'react-router-dom'
 import StatCard from '../components/StatCard'
 import StatusBadge from '../components/StatusBadge'
 import { recentApplications } from '../data/recentApplications'
-import { currentUser } from '../data/currentUser'
+import { useAuth } from '../context/useAuth'
 import './Dashboard.css'
+
+// Total Applications / Approved / Pending / Declined and the applications
+// table below are still demo data — the backend doesn't expose an
+// applications API yet, only /auth and /qr-codes.
 
 const STATS = [
   { label: 'Total Applications', value: '247', change: '+12%' },
@@ -19,7 +23,8 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
 })
 
 function Dashboard() {
-  const firstName = currentUser.name.split(' ')[0]
+  const { user } = useAuth()
+  const firstName = user.name.split(' ')[0]
 
   return (
     <div>

@@ -89,6 +89,16 @@
   font-size: 14.5px;
 }
 
+.login-error {
+  margin: -6px 0 18px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .login-form-row {
   display: flex;
   align-items: center;

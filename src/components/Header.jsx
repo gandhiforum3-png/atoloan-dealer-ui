@@ -1,6 +1,6 @@
 import './Header.css'
 
-function Header({ user }) {
+function Header({ user, onLogout }) {
   const initials = user.name
     .split(' ')
     .map((part) => part[0])
@@ -24,9 +24,12 @@ function Header({ user }) {
           </span>
           <div>
             <p className="app-header-user-name">{user.name}</p>
-            <p className="app-header-user-org">{user.org}</p>
+            <p className="app-header-user-org">{user.dealership_name}</p>
           </div>
         </div>
+        <button type="button" className="icon-button" aria-label="Log out" onClick={onLogout}>
+          <i className="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+        </button>
       </div>
     </header>
   )

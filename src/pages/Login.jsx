@@ -1,17 +1,42 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BrandMark from '../components/BrandMark'
+import { useAuth } from '../context/useAuth'
+import { ApiError } from '../api/client'
 import './Login.css'
 
 function Login() {
   const navigate = useNavigate()
+  const { login, status } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(false)
+  const [error, setError] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
 
-  const handleSubmit = (event) => {
+  useEffect(() => {
+    if (status === 'authenticated') {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [status, navigate])
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    navigate('/dashboard')
+    if (!email || !password) return
+
+    setSubmitting(true)
+    setError(null)
+
+    try {
+      await login(email, password)
+      navigate('/dashboard')
+    } catch (err) {
+      setError(
+        err instanceof ApiError ? err.message : 'Unable to reach the server. Is the backend running?'
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -72,6 +97,12 @@ function Login() {
                 autoComplete="current-password"
               />
 
+              {error && (
+                <p className="login-error" role="alert">
+                  {error}
+                </p>
+              )}
+
               <div className="login-form-row">
                 <label className="checkbox-label">
                   <input
@@ -86,8 +117,8 @@ function Login() {
                 </a>
               </div>
 
-              <button type="submit" className="btn btn-dark btn-block">
-                Sign In to Dashboard
+              <button type="submit" className="btn btn-dark btn-block" disabled={submitting}>
+                {submitting ? 'Signing In…' : 'Sign In to Dashboard'}
               </button>
 
               <button type="button" className="btn btn-secondary btn-block">
