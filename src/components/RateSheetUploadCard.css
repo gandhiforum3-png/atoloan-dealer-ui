@@ -1,0 +1,64 @@
+.rate-sheet-card {
+  padding: 28px;
+  max-width: 640px;
+  margin-top: 24px;
+}
+
+.rate-sheet-card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.rate-sheet-intro {
+  margin: 0 0 20px;
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+}
+
+.rate-sheet-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.rate-sheet-note {
+  margin: 16px 0 0;
+  font-size: 12px;
+  color: var(--color-text-faint);
+  line-height: 1.5;
+}
+
+.rate-sheet-result {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.rate-sheet-result-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-success-text);
+}
+
+.rate-sheet-result-title--failed {
+  color: var(--color-danger-text);
+}
+
+.rate-sheet-result-detail {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.rate-sheet-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}

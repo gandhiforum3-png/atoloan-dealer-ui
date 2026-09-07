@@ -73,14 +73,59 @@
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.soft-pull-bank-match .soft-pull-result-label {
   text-align: center;
+  margin-bottom: 12px;
+}
+
+.soft-pull-count {
+  font-weight: 400;
+  color: var(--color-text-faint);
 }
 
 .soft-pull-bank-name {
-  margin: 4px 0 0;
-  font-size: 20px;
-  font-weight: 800;
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
   color: var(--color-text);
+}
+
+.soft-pull-bank-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.soft-pull-bank-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.soft-pull-bank-row:last-child {
+  border-bottom: none;
+}
+
+.soft-pull-bank-row .soft-pull-result-note {
+  margin: 2px 0 0;
+  text-align: left;
+}
+
+.soft-pull-bank-rate {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  flex-shrink: 0;
 }
 
 @media (max-width: 720px) {

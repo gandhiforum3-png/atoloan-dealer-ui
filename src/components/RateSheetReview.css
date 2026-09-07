@@ -1,0 +1,151 @@
+.rate-sheet-review {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.rsr-section {
+  margin-bottom: 20px;
+}
+
+.rsr-section:last-child {
+  margin-bottom: 0;
+}
+
+.rsr-section-title {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.rsr-count {
+  font-weight: 400;
+  color: var(--color-text-faint);
+}
+
+.rsr-fact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 16px;
+}
+
+.rsr-fact-label {
+  margin: 0 0 2px;
+  font-size: 11.5px;
+  color: var(--color-text-faint);
+}
+
+.rsr-fact-label--spaced {
+  margin-top: 12px;
+}
+
+.rsr-fact-value {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.rsr-note {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.rsr-bullet-list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.rsr-program {
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+}
+
+.rsr-program:last-child {
+  margin-bottom: 0;
+}
+
+.rsr-program-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.rsr-program-name {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.rsr-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.rsr-tier-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rsr-tier {
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.rsr-tier-name {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.rsr-tier-score {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.rsr-term-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rsr-term-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text);
+  padding: 4px 0;
+}
+
+.rsr-term-row--header {
+  color: var(--color-text-faint);
+  font-weight: 700;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 6px;
+  margin-bottom: 2px;
+}
+
+@media (max-width: 480px) {
+  .rsr-fact-grid {
+    grid-template-columns: 1fr;
+  }
+}

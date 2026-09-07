@@ -1,0 +1,72 @@
+.applications-card {
+  padding: 8px 24px 24px;
+}
+
+.applications-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.applications-table th {
+  text-align: left;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  padding: 16px 8px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.applications-row {
+  cursor: pointer;
+}
+
+.applications-row:hover td {
+  background: var(--color-bg);
+}
+
+.applications-row td {
+  padding: 14px 8px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+  color: var(--color-text);
+  vertical-align: top;
+}
+
+.applications-name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.applications-subtext {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.applications-chevron {
+  text-align: right;
+  color: var(--color-text-faint);
+  width: 24px;
+}
+
+.applications-detail-row td {
+  padding: 0 8px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.applications-detail {
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.applications-bank-list {
+  margin-top: 8px;
+}
+
+@media (max-width: 720px) {
+  .applications-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

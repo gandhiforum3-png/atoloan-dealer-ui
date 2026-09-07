@@ -1,111 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { getBanks, getMyBankNetwork, saveMyBankNetwork } from '../api/banks'
-import { uploadRateSheet } from '../api/rateSheets'
 import { ApiError } from '../api/client'
+import RateSheetUploadCard from '../components/RateSheetUploadCard'
 import './BankNetwork.css'
 
 function friendlyError(err) {
   return err instanceof ApiError ? err.message : 'Unable to reach the server. Is the backend running?'
-}
-
-function RateSheetUpload() {
-  const [file, setFile] = useState(null)
-  const [uploading, setUploading] = useState(false)
-  const [result, setResult] = useState(null)
-  const [error, setError] = useState(null)
-
-  const handleFileChange = (event) => {
-    setFile(event.target.files?.[0] ?? null)
-    setResult(null)
-    setError(null)
-  }
-
-  const handleUpload = async (event) => {
-    event.preventDefault()
-    if (!file) return
-
-    setUploading(true)
-    setError(null)
-    setResult(null)
-
-    try {
-      setResult(await uploadRateSheet(file))
-    } catch (err) {
-      setError(friendlyError(err))
-    } finally {
-      setUploading(false)
-    }
-  }
-
-  const loanProgramCount = result?.rate_sheet?.loan_programs?.length ?? 0
-
-  return (
-    <div className="card rate-sheet-card">
-      <h2>Upload Rate Sheet</h2>
-      <p className="rate-sheet-intro">
-        Upload a bank&apos;s rate sheet PDF to preview its parsed rates and terms.
-      </p>
-
-      <form onSubmit={handleUpload}>
-        <label className="field-label" htmlFor="rate-sheet-file">
-          Rate Sheet (PDF)
-        </label>
-        <input
-          id="rate-sheet-file"
-          className="field-input"
-          type="file"
-          accept="application/pdf"
-          onChange={handleFileChange}
-        />
-
-        {error && (
-          <p className="login-error" role="alert">
-            {error}
-          </p>
-        )}
-
-        <button type="submit" className="btn btn-primary" disabled={!file || uploading}>
-          <i className="fa-solid fa-file-arrow-up" aria-hidden="true"></i>
-          {uploading ? 'Parsing…' : 'Upload & Parse'}
-        </button>
-
-        {uploading && (
-          <p className="rate-sheet-note">Parsing rate sheet — this can take up to a minute…</p>
-        )}
-
-        {result && (
-          <div className="rate-sheet-result">
-            {result.rate_sheet ? (
-              <>
-                <p className="rate-sheet-result-title">
-                  <i className="fa-solid fa-circle-check" aria-hidden="true"></i>
-                  Parsed {result.rate_sheet.credit_union_info?.name || result.filename}
-                </p>
-                {result.validation && (
-                  <p className="rate-sheet-result-detail">
-                    Validation: {result.validation.is_valid ? 'looks good' : 'flagged for review'}
-                    {result.validation.similarity && ` · ${result.validation.similarity} text match`}
-                  </p>
-                )}
-                <p className="rate-sheet-result-detail">
-                  {loanProgramCount} loan program{loanProgramCount === 1 ? '' : 's'} detected.
-                </p>
-              </>
-            ) : (
-              <p className="rate-sheet-result-title rate-sheet-result-title--failed">
-                <i className="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-                {result.parse_error || 'The rate sheet could not be parsed.'}
-              </p>
-            )}
-          </div>
-        )}
-
-        <p className="rate-sheet-note">
-          This is a preview only — nothing is saved to your bank network yet.
-        </p>
-      </form>
-    </div>
-  )
 }
 
 function BankNetwork() {
@@ -116,6 +16,14 @@ function BankNetwork() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
   const [saveError, setSaveError] = useState(null)
+
+  const loadBankData = useCallback(async () => {
+    const [allBanks, network] = await Promise.all([getBanks(), getMyBankNetwork()])
+    setBanks(allBanks)
+    const ids = new Set(network.map((bank) => bank.id))
+    setSelectedIds(ids)
+    setSavedIds(ids)
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -167,6 +75,12 @@ function BankNetwork() {
     } finally {
       setSaving(false)
     }
+  }
+
+  // A newly-approved rate sheet adds a bank server-side — refetch so it
+  // shows up (and is checked) in the list without a manual reload.
+  const handleRateSheetApproved = () => {
+    loadBankData().catch((err) => setError(friendlyError(err)))
   }
 
   return (
@@ -237,7 +151,7 @@ function BankNetwork() {
         )}
       </div>
 
-      <RateSheetUpload />
+      <RateSheetUploadCard onApproved={handleRateSheetApproved} />
     </div>
   )
 }

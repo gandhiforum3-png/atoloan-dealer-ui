@@ -8,3 +8,10 @@ export function uploadRateSheet(file) {
     body: formData,
   })
 }
+
+export function confirmRateSheet(rateSheet) {
+  return apiFetch('/rate-sheets/confirm', {
+    method: 'POST',
+    body: JSON.stringify({ rate_sheet: rateSheet }),
+  })
+}

@@ -92,7 +92,7 @@ function SoftPull() {
   }
 
   const prequal = result?.prequal
-  const bestBank = result?.best_bank
+  const matchedBanks = result?.matched_banks ?? []
 
   return (
     <div>
@@ -313,14 +313,25 @@ function SoftPull() {
               </p>
             )}
 
-            {bestBank ? (
+            {matchedBanks.length > 0 ? (
               <div className="soft-pull-bank-match">
-                <p className="soft-pull-result-label">Matched Lender</p>
-                <p className="soft-pull-bank-name">{bestBank.bank_name}</p>
-                <p className="soft-pull-result-note">
-                  {bestBank.program_name} · {bestBank.interest_rate}
-                  {bestBank.term_in_months ? ` · ${bestBank.term_in_months} mo` : ''}
+                <p className="soft-pull-result-label">
+                  Matched Lenders <span className="soft-pull-count">({matchedBanks.length})</span>
                 </p>
+                <ul className="soft-pull-bank-list">
+                  {matchedBanks.map((bank) => (
+                    <li key={bank.bank_id} className="soft-pull-bank-row">
+                      <div>
+                        <p className="soft-pull-bank-name">{bank.bank_name}</p>
+                        <p className="soft-pull-result-note">
+                          {bank.program_name}
+                          {bank.term_in_months ? ` · ${bank.term_in_months} mo` : ''}
+                        </p>
+                      </div>
+                      <p className="soft-pull-bank-rate">{bank.interest_rate}</p>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ) : (
               prequal.score != null && (
