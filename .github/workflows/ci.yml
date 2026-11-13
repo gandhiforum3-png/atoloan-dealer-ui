@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:unit
+      - run: npm run build
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # gitleaks scans the whole history
+      - name: Dependency CVEs (shipped deps)
+        run: npm audit --omit=dev --audit-level=high
+      - name: SAST + secrets patterns
+        run: pipx run semgrep scan --config p/default --config p/secrets --error --metrics off
+      - name: Secrets in git history
+        run: docker run --rm -v "$PWD":/repo ghcr.io/gitleaks/gitleaks:v8.21.2 git /repo --no-banner --redact
+      - name: Build image
+        run: docker build -t atoloan-dealer-ui:ci .
+      - name: Image CVEs
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: atoloan-dealer-ui:ci
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"

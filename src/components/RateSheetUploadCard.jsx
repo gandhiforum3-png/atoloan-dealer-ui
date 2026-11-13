@@ -113,6 +113,8 @@ function RateSheetUploadCard({ onApproved }) {
               <p className="rate-sheet-result-title">
                 <i className="fa-solid fa-circle-check" aria-hidden="true"></i>
                 {approved.bank_name} added to your bank network.
+                {approved.approval_status === 'pending' &&
+                  ' Atoloan will review the rates before customers can be matched to this lender.'}
               </p>
             ) : (
               <>
@@ -121,12 +123,6 @@ function RateSheetUploadCard({ onApproved }) {
                   Parsed {result.rate_sheet.credit_union_info?.name || result.filename} — review before
                   approving
                 </p>
-                {result.validation && (
-                  <p className="rate-sheet-result-detail">
-                    Validation: {result.validation.is_valid ? 'looks good' : 'flagged for review'}
-                    {result.validation.similarity && ` · ${result.validation.similarity} text match`}
-                  </p>
-                )}
                 <p className="rate-sheet-result-detail">
                   {loanProgramCount} loan program{loanProgramCount === 1 ? '' : 's'} detected.
                 </p>

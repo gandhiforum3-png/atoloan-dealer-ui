@@ -1,0 +1,114 @@
+.admin-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px 0 8px;
+}
+
+.admin-toolbar-label {
+  margin: 0;
+}
+
+.admin-toolbar-select {
+  width: auto;
+  min-width: 260px;
+  margin-bottom: 0;
+}
+
+.admin-filter-count {
+  color: var(--color-text-faint);
+  font-weight: 500;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-row td {
+  padding: 14px 8px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.admin-row-actions {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.admin-row-actions .btn {
+  padding: 8px 16px;
+}
+
+.lender-review-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  margin-bottom: 16px;
+}
+
+.lender-review-hint {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.lender-review-error {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-toolbar-select {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* --- Customer detail --- */
+.customer-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px 24px;
+  margin: 0 0 20px;
+}
+.customer-facts dt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.customer-facts dd {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+}
+.customer-section-title {
+  font-size: 15px;
+  margin: 0 0 8px;
+}
+.customer-actions {
+  flex-wrap: wrap;
+}
+.field-error {
+  color: var(--color-danger-text);
+  font-size: 13px;
+  margin: -8px 0 12px;
+}

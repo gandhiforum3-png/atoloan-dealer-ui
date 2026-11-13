@@ -26,7 +26,7 @@ function friendlyError(err) {
   return err instanceof ApiError ? err.message : 'Unable to reach the server. Is the backend running?'
 }
 
-function buildPayload(form) {
+function buildPayload(form, consent) {
   const answers = { 'vehicle-type': form.vehicleType }
   if (form.vehiclePrice.trim()) {
     answers['vehicle-price'] = form.vehiclePrice.trim()
@@ -47,6 +47,9 @@ function buildPayload(form) {
       zip: form.zip.trim(),
     },
     answers,
+    // The dealer's certification that the applicant consented (FCRA) — the
+    // backend refuses the pull without it and records the time.
+    consent,
   }
 }
 
@@ -82,7 +85,7 @@ function SoftPull() {
     setResult(null)
 
     try {
-      const data = await submitSoftPull(buildPayload(form))
+      const data = await submitSoftPull(buildPayload(form, consent))
       setResult(data)
       setStatus('done')
     } catch (err) {
@@ -114,7 +117,6 @@ function SoftPull() {
             <input
               id="firstName"
               className="field-input"
-              placeholder="John"
               value={form.firstName}
               onChange={updateField('firstName')}
             />
@@ -126,7 +128,6 @@ function SoftPull() {
             <input
               id="lastName"
               className="field-input"
-              placeholder="Doe"
               value={form.lastName}
               onChange={updateField('lastName')}
             />
@@ -142,7 +143,7 @@ function SoftPull() {
               id="email"
               type="email"
               className="field-input"
-              placeholder="john.doe@email.com"
+              placeholder="e.g. name@email.com"
               value={form.email}
               onChange={updateField('email')}
             />
@@ -155,7 +156,7 @@ function SoftPull() {
               id="phone"
               type="tel"
               className="field-input"
-              placeholder="(310) 555-0148"
+              placeholder="e.g. (310) 555-0148"
               value={form.phone}
               onChange={updateField('phone')}
             />
@@ -169,7 +170,7 @@ function SoftPull() {
           <input
             id="street"
             className="field-input"
-            placeholder="1234 Westside Blvd, Apt 4B"
+            placeholder="Street and unit number"
             value={form.street}
             onChange={updateField('street')}
           />
@@ -183,7 +184,6 @@ function SoftPull() {
             <input
               id="city"
               className="field-input"
-              placeholder="Los Angeles"
               value={form.city}
               onChange={updateField('city')}
             />
@@ -210,7 +210,7 @@ function SoftPull() {
             <input
               id="zip"
               className="field-input"
-              placeholder="90025"
+              placeholder="e.g. 90025"
               value={form.zip}
               onChange={updateField('zip')}
             />
@@ -248,7 +248,7 @@ function SoftPull() {
               min="0"
               step="1"
               className="field-input"
-              placeholder="32000"
+              placeholder="e.g. 32000"
               value={form.vehiclePrice}
               onChange={updateField('vehiclePrice')}
             />
@@ -263,7 +263,7 @@ function SoftPull() {
               min="0"
               step="1"
               className="field-input"
-              placeholder="5000"
+              placeholder="e.g. 5000"
               value={form.downPayment}
               onChange={updateField('downPayment')}
             />

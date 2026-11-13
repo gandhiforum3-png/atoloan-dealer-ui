@@ -10,7 +10,6 @@ function Login() {
   const { login, status } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [remember, setRemember] = useState(false)
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -52,17 +51,6 @@ function Login() {
               networks from one central portal designed for high-performance dealerships.
             </p>
           </div>
-
-          <div className="login-hero-stats">
-            <div>
-              <p className="login-hero-stat-value">1.5M+</p>
-              <p className="login-hero-stat-label">Applications Processed</p>
-            </div>
-            <div>
-              <p className="login-hero-stat-value">&lt; 3s</p>
-              <p className="login-hero-stat-label">Soft Pull Response Time</p>
-            </div>
-          </div>
         </section>
 
         <section className="login-form-section">
@@ -82,6 +70,7 @@ function Login() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
+                required
               />
 
               <label className="field-label" htmlFor="password">
@@ -95,6 +84,7 @@ function Login() {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 autoComplete="current-password"
+                required
               />
 
               {error && (
@@ -103,29 +93,12 @@ function Login() {
                 </p>
               )}
 
-              <div className="login-form-row">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={(event) => setRemember(event.target.checked)}
-                  />
-                  Remember this computer
-                </label>
-                <a href="#forgot-password" className="text-link">
-                  Forgot Password?
-                </a>
-              </div>
-
               <button type="submit" className="btn btn-dark btn-block" disabled={submitting}>
                 {submitting ? 'Signing In…' : 'Sign In to Dashboard'}
               </button>
-
-              <button type="button" className="btn btn-secondary btn-block">
-                <i className="fa-solid fa-shield-halved" aria-hidden="true"></i>
-                Use Security Key or Passkey
-              </button>
             </form>
+
+            <p className="login-help">Forgot your password? Ask your Atoloan administrator to reset it.</p>
           </div>
         </section>
       </div>

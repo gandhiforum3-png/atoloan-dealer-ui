@@ -1,9 +1,8 @@
 import './StatusBadge.css'
 
-function StatusBadge({ status }) {
-  const tone = status.toLowerCase()
-
-  return <span className={`status-badge status-badge--${tone}`}>{status}</span>
+// `tone` picks the color; defaults to the lowercased label (e.g. "Approved" → approved)
+function StatusBadge({ status, tone }) {
+  return <span className={`status-badge status-badge--${tone ?? status.toLowerCase()}`}>{status}</span>
 }
 
 export default StatusBadge

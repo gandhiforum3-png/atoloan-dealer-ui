@@ -1,54 +1,91 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import StatCard from '../components/StatCard'
-import StatusBadge from '../components/StatusBadge'
-import { recentApplications } from '../data/recentApplications'
+import { listLenders } from '../api/admin'
+import { getMyApplications, getMyApplicationsSummary } from '../api/applications'
 import { useAuth } from '../context/useAuth'
+import { friendlyError } from '../utils/format'
 import './Dashboard.css'
 
-// Total Applications / Approved / Pending / Declined and the applications
-// table below are still demo data — the backend doesn't expose an
-// applications API yet, only /auth and /qr-codes.
-
-const STATS = [
-  { label: 'Total Applications', value: '247', change: '+12%' },
-  { label: 'Approved', value: '189', change: '+8%' },
-  { label: 'Pending Review', value: '42', change: '-3%' },
-  { label: 'Declined', value: '16', change: '+2%' },
-]
-
-const currencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  maximumFractionDigits: 0,
-})
+function formatDate(value) {
+  return value ? new Date(value).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—'
+}
 
 function Dashboard() {
   const { user } = useAuth()
   const firstName = user.name.split(' ')[0]
+  const [summary, setSummary] = useState(null)
+  const [recent, setRecent] = useState(null)
+  const [error, setError] = useState(null)
+  const [pendingLenders, setPendingLenders] = useState(0)
+
+  useEffect(() => {
+    let cancelled = false
+    // Stats are counted server-side over every application, not just a page of them
+    Promise.all([getMyApplicationsSummary(), getMyApplications({ limit: 5 })])
+      .then(([counts, page]) => {
+        if (cancelled) return
+        setSummary(counts)
+        setRecent(page.applications)
+      })
+      .catch((err) => !cancelled && setError(friendlyError(err)))
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!user.is_admin) return undefined
+    let cancelled = false
+    listLenders()
+      .then((lenders) => !cancelled && setPendingLenders(lenders.filter((l) => l.approval_status === 'pending').length))
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [user.is_admin])
+
+  const stats = [
+    { label: 'Total Applications', value: summary?.total },
+    { label: 'Matched to a Bank', value: summary?.matched },
+    { label: 'No Match Yet', value: summary?.unmatched },
+    { label: 'Last 7 Days', value: summary?.last_7_days },
+  ]
 
   return (
     <div>
       <div className="page-header">
         <div>
           <h1>Hello, {firstName}</h1>
-          <p>Here is your dealership performance overview for today.</p>
+          <p>Here is your dealership performance overview.</p>
         </div>
         <div className="page-header-actions">
-          <button type="button" className="btn btn-secondary">
-            <i className="fa-solid fa-download" aria-hidden="true"></i>
-            Export Reports
-          </button>
-          <button type="button" className="btn btn-primary">
+          <Link to="/soft-pull" className="btn btn-primary">
             <i className="fa-solid fa-plus" aria-hidden="true"></i>
             New Application
-          </button>
+          </Link>
         </div>
       </div>
 
+      {pendingLenders > 0 && (
+        <div className="admin-callout" role="status">
+          <i className="fa-solid fa-building-columns" aria-hidden="true"></i>
+          <p>
+            <strong>
+              {pendingLenders} lender{pendingLenders === 1 ? '' : 's'} awaiting approval.
+            </strong>{' '}
+            Customers aren&apos;t matched to them until you review the rate sheet.
+          </p>
+          <Link to="/admin/lenders" className="btn btn-dark">
+            Review now
+          </Link>
+        </div>
+      )}
+
       <div className="dashboard-overview">
         <div className="stats-grid">
-          {STATS.map((stat) => (
-            <StatCard key={stat.label} {...stat} />
+          {stats.map((stat) => (
+            <StatCard key={stat.label} label={stat.label} value={stat.value ?? '—'} />
           ))}
         </div>
 
@@ -78,30 +115,43 @@ function Dashboard() {
           </Link>
         </div>
 
-        <table className="applications-table">
-          <thead>
-            <tr>
-              <th>Applicant Name</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th className="applications-table-amount">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentApplications.map((application) => (
-              <tr key={application.id}>
-                <td className="applications-table-name">{application.name}</td>
-                <td>{application.date}</td>
-                <td>
-                  <StatusBadge status={application.status} />
-                </td>
-                <td className="applications-table-amount">
-                  {currencyFormatter.format(application.amount)}
-                </td>
+        {error ? (
+          <p className="login-error" role="alert">{error}</p>
+        ) : !recent ? (
+          <p className="recent-applications-note">Loading applications…</p>
+        ) : recent.length === 0 ? (
+          <p className="recent-applications-note">
+            No applications yet. Run a <Link to="/soft-pull" className="text-link">soft pull</Link> or share
+            your <Link to="/qr-code" className="text-link">QR code</Link> to get started.
+          </p>
+        ) : (
+          <table className="applications-table">
+            <thead>
+              <tr>
+                <th>Applicant Name</th>
+                <th>Date</th>
+                <th>Credit Score</th>
+                <th>Best Match</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {recent.map((application) => (
+                <tr key={application.id}>
+                  <td className="applications-table-name">
+                    {application.first_name} {application.last_name}
+                  </td>
+                  <td>{formatDate(application.created_at)}</td>
+                  <td>{application.prequal_score ?? '—'}</td>
+                  <td>
+                    {application.bank_name
+                      ? `${application.bank_name}${application.interest_rate ? ` · ${application.interest_rate}` : ''}`
+                      : '—'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )
