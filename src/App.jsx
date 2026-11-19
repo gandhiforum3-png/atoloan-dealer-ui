@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard'
 import SoftPull from './pages/SoftPull'
 import BankNetwork from './pages/BankNetwork'
 import Applications from './pages/Applications'
+import Billing from './pages/Billing'
+import BillingCheckout from './pages/BillingCheckout'
 import QRCode from './pages/QRCode'
 import Settings from './pages/Settings'
 import { useAuth } from './context/useAuth'
@@ -35,6 +37,8 @@ function App() {
           <Route path="/soft-pull" element={<SoftPull />} />
           <Route path="/bank-network" element={<BankNetwork />} />
           <Route path="/applications" element={<Applications />} />
+          <Route path="/billing" element={<Billing />} />
+          <Route path="/billing/checkout" element={<BillingCheckout />} />
           <Route path="/qr-code" element={<QRCode />} />
           <Route path="/settings" element={<Settings />} />
         </Route>

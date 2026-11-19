@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { to: '/soft-pull', label: 'Soft Pull', icon: 'fa-user-check' },
   { to: '/bank-network', label: 'Bank Network', icon: 'fa-shield-halved' },
   { to: '/applications', label: 'Applications', icon: 'fa-file-lines' },
+  { to: '/billing', label: 'Billing', icon: 'fa-credit-card' },
   { to: '/qr-code', label: 'QR Code', icon: 'fa-qrcode' },
   { to: '/settings', label: 'Settings', icon: 'fa-gear' },
 ]

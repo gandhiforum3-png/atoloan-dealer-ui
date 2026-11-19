@@ -24,6 +24,29 @@
   grid-template-columns: 1fr 1fr 1fr;
 }
 
+.soft-pull-review-title {
+  margin: 28px 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.soft-pull-consent-intro {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  color: var(--color-text);
+}
+
+.soft-pull-consent-points {
+  margin: 0 0 18px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+}
+
 .soft-pull-consent {
   margin: 4px 0 24px;
   align-items: flex-start;

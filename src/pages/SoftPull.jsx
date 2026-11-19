@@ -3,6 +3,7 @@ import { US_STATES } from '../data/usStates'
 import { VEHICLE_TYPES } from '../data/vehicleTypes'
 import { submitSoftPull } from '../api/softPull'
 import { ApiError } from '../api/client'
+import { useAuth } from '../context/useAuth'
 import './SoftPull.css'
 
 const EMPTY_FORM = {
@@ -51,6 +52,7 @@ function buildPayload(form) {
 }
 
 function SoftPull() {
+  const { user } = useAuth()
   const [form, setForm] = useState(EMPTY_FORM)
   const [consent, setConsent] = useState(false)
   const [status, setStatus] = useState('idle') // idle | loading | done
@@ -270,9 +272,22 @@ function SoftPull() {
           </div>
         </div>
 
+        <h2 className="soft-pull-review-title">Review &amp; Continue</h2>
+        <p className="soft-pull-consent-intro">
+          Before we search for your best rate, please review and agree to the following:
+        </p>
+        <ul className="soft-pull-consent-points">
+          <li>This is a soft credit inquiry to check pre-qualification — it will not affect your credit score.</li>
+          <li>
+            I agree to the Privacy Policy and Terms &amp; Conditions, and I may be contacted by{' '}
+            {user?.dealership_name ?? 'this dealership'}.
+          </li>
+          <li>I understand I might not pre-qualify depending on the pre-qualification criteria.</li>
+        </ul>
+
         <label className="checkbox-label soft-pull-consent">
           <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />
-          I certify that the applicant has provided written or electronic consent to run a soft pull query.
+          I agree to the terms above and consent to a soft credit check
         </label>
 
         {error && (
