@@ -9,15 +9,7 @@ function Header({ user, onLogout }) {
 
   return (
     <header className="app-header">
-      <div className="app-header-search">
-        <i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-        <input type="text" placeholder="Search applications..." aria-label="Search applications" />
-      </div>
-
       <div className="app-header-actions">
-        <button type="button" className="icon-button" aria-label="Notifications">
-          <i className="fa-solid fa-bell" aria-hidden="true"></i>
-        </button>
         <div className="app-header-user">
           <span className="app-header-avatar" aria-hidden="true">
             {initials}

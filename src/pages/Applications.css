@@ -70,3 +70,36 @@
     overflow-x: auto;
   }
 }
+
+.applications-row--expanded td {
+  border-bottom-color: transparent;
+}
+
+.applications-toggle {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-faint);
+}
+
+.applications-toggle:hover,
+.applications-toggle:focus-visible {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* Wide tables scroll inside their card instead of stretching the page */
+.applications-table-wrap {
+  position: relative; /* keeps absolutely-positioned screen-reader text inside the scroller */
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 720px) {
+  .applications-table-wrap .applications-table {
+    display: table;
+    min-width: 680px;
+  }
+}

@@ -4,34 +4,23 @@
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 999px;
+  white-space: nowrap;
 }
 
-.status-badge--approved {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
-}
-
-.status-badge--pending {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
-}
-
-.status-badge--declined {
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
-}
-
+.status-badge--approved,
 .status-badge--active,
 .status-badge--paid {
   background: var(--color-success-bg);
   color: var(--color-success-text);
 }
 
+.status-badge--pending,
 .status-badge--past-due {
   background: var(--color-warning-bg);
   color: var(--color-warning-text);
 }
 
+.status-badge--declined,
 .status-badge--failed {
   background: var(--color-danger-bg);
   color: var(--color-danger-text);
@@ -41,4 +30,15 @@
 .status-badge--refunded {
   background: var(--color-neutral-bg);
   color: var(--color-neutral-text);
+}
+
+.status-badge--inactive {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.status-badge--admin {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
 }

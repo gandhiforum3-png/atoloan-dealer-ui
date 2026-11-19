@@ -8,11 +8,15 @@ import Applications from './pages/Applications'
 import Billing from './pages/Billing'
 import BillingCheckout from './pages/BillingCheckout'
 import QRCode from './pages/QRCode'
-import Settings from './pages/Settings'
+import ChangePassword from './pages/ChangePassword'
+import Dealers from './pages/Dealers'
+import AdminLenders from './pages/admin/AdminLenders'
+import AdminApplications from './pages/admin/AdminApplications'
+import AdminCustomers from './pages/admin/AdminCustomers'
 import { useAuth } from './context/useAuth'
 
 function RequireAuth() {
-  const { status } = useAuth()
+  const { status, user } = useAuth()
 
   if (status === 'loading') {
     return <div className="app-loading">Loading…</div>
@@ -22,7 +26,18 @@ function RequireAuth() {
     return <Navigate to="/login" replace />
   }
 
+  if (user?.must_change_password) {
+    return <ChangePassword />
+  }
+
   return <Outlet />
+}
+
+// Admin rights are enforced by the API on every request; this only keeps
+// non-admins from landing on pages that would just show 403s.
+function RequireAdmin() {
+  const { user } = useAuth()
+  return user?.is_admin ? <Outlet /> : <Navigate to="/dashboard" replace />
 }
 
 function App() {
@@ -40,7 +55,12 @@ function App() {
           <Route path="/billing" element={<Billing />} />
           <Route path="/billing/checkout" element={<BillingCheckout />} />
           <Route path="/qr-code" element={<QRCode />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route element={<RequireAdmin />}>
+            <Route path="/admin/lenders" element={<AdminLenders />} />
+            <Route path="/admin/dealers" element={<Dealers />} />
+            <Route path="/admin/applications" element={<AdminApplications />} />
+            <Route path="/admin/customers" element={<AdminCustomers />} />
+          </Route>
         </Route>
       </Route>
 

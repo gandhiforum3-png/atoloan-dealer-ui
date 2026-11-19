@@ -9,6 +9,7 @@
   font-weight: 700;
   padding: 11px 20px;
   white-space: nowrap;
+  text-decoration: none;
 }
 
 .btn-block {
@@ -129,6 +130,10 @@ select.field-input {
   background-position: right 14px center;
 }
 
+.field-input::placeholder {
+  color: var(--color-text-faint);
+}
+
 .field-input:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 1px;
@@ -185,4 +190,114 @@ select.field-input {
   font-size: 14px;
   color: var(--color-text-muted);
   line-height: 1.5;
+}
+
+/* Text for screen readers only */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keyboard focus is always visible (mouse clicks don't show the ring) */
+.btn:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.load-more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.load-more-count {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* Inline confirmation/notice banner at the top of a page */
+.page-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border-radius: var(--radius-sm);
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.page-notice button {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+}
+
+/* Segmented filter (Pending / Approved / All) */
+.segmented {
+  display: inline-flex;
+  padding: 4px;
+  gap: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.segmented button {
+  border: none;
+  background: transparent;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.segmented button[aria-pressed='true'] {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
+}
+
+.count-pill {
+  display: inline-block;
+  min-width: 20px;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.btn-danger {
+  background: var(--color-danger-text);
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+.btn-danger:disabled {
+  background: var(--color-text-faint);
+  cursor: not-allowed;
 }

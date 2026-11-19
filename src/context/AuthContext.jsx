@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { getCurrentUser, login as loginRequest, logout as logoutRequest } from '../api/auth'
+import {
+  changePassword as changePasswordRequest,
+  getCurrentUser,
+  login as loginRequest,
+  logout as logoutRequest,
+} from '../api/auth'
 import { AuthContext } from './auth-context'
 
 export function AuthProvider({ children }) {
@@ -32,11 +37,17 @@ export function AuthProvider({ children }) {
     return data
   }, [])
 
+  const changePassword = useCallback(async (currentPassword, newPassword) => {
+    const data = await changePasswordRequest(currentPassword, newPassword)
+    setUser(data)
+    return data
+  }, [])
+
   const logout = useCallback(async () => {
     await logoutRequest()
     setUser(null)
     setStatus('anonymous')
   }, [])
 
-  return <AuthContext.Provider value={{ user, status, login, logout }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, status, login, changePassword, logout }}>{children}</AuthContext.Provider>
 }

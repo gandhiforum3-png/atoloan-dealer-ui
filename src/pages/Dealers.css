@@ -1,0 +1,131 @@
+.dealers-card {
+  padding: 8px 24px 24px;
+}
+
+.dealers-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0 4px;
+  color: var(--color-text-faint);
+}
+
+.dealers-search-input {
+  margin-bottom: 0;
+}
+
+.dealers-table th:last-child,
+.dealers-table td:last-child {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.dealers-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.dealers-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.dealers-icon-btn:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.dealers-icon-btn--danger:hover {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+  border-color: var(--color-danger-bg);
+}
+
+.dealers-modal-copy {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.dealers-password-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.dealers-password-value {
+  flex: 1;
+  padding: 11px 14px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+}
+
+.dealers-row td {
+  padding: 14px 8px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.dealers-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.dealers-you {
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.dealers-icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dealers-icon-btn:disabled:hover {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.dealers-admin-toggle {
+  align-items: flex-start;
+  margin: 4px 0 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.dealers-admin-toggle input {
+  margin-top: 3px;
+}
+
+.dealers-field-hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.dealers-field-hint--block {
+  margin: -8px 0 20px;
+}

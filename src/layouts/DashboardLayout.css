@@ -13,11 +13,16 @@
 
 .dashboard-layout-content {
   flex: 1;
+  min-width: 0; /* lets wide tables scroll inside their card instead of widening the page */
   padding: 32px;
 }
 
 @media (max-width: 900px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
   .dashboard-layout-content {
-    padding: 20px;
+    padding: 20px 16px;
   }
 }
